@@ -27,14 +27,30 @@ ref.galleryDiv.insertAdjacentHTML(
   galleryItemsMarkUp(galleryItems)
 );
 
-ref.galleryDiv.addEventListener("click", onPictureResizeClick);
+ref.galleryDiv.addEventListener("click", onPictureClickToOpenModal);
 
-function onPictureResizeClick(e) {
+function onPictureClickToOpenModal(e) {
   e.preventDefault();
   if (e.target.nodeName !== "IMG") {
     return;
   }
 
-  const galleryLink = e.currentTarget.querySelector(".gallery__link");
-  console.log(galleryLink.href);
+  const galleryLink = e.target.dataset.source;
+
+  const instance = basicLightbox.create(`
+  <img class="gallery__image" src="${galleryLink}" width="800" height="600">
+  `);
+
+  instance.show();
+
+  window.addEventListener("keydown", function (e) {
+    handleModalCloseKeyPress(e, instance);
+  });
+}
+
+function handleModalCloseKeyPress(e, lightBoxEl) {
+  if (e.key === "Escape") {
+    lightBoxEl.close();
+    window.removeEventListener("keydown", handleModalCloseKeyPress);
+  }
 }
